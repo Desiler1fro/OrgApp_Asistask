@@ -246,7 +246,7 @@ class AddTaskNotifier extends Notifier<AddTaskState> {
 
       final dayScheduleRepo = ref.read(dayScheduleRepositoryProvider);
       for (final s in state.schedules) {
-        await dayScheduleRepo.rememberIfMissing(
+        await dayScheduleRepo.remember(
           DaySchedule(
             dayOfWeek: s.date.weekday,
             startMinutes: s.startMinutes,
@@ -312,10 +312,16 @@ class AddTaskNotifier extends Notifier<AddTaskState> {
 
   List<DateTime> _activeDays() => activeDays();
 
-  Future<DaySchedule?> _prefillFor(DateTime date) {
-    return ref
-        .read(dayScheduleRepositoryProvider)
-        .findByDayOfWeek(date.weekday);
+  // Prefill dinámico: prioriza el horario más usado entre tareas activas
+  // (refleja lo que el usuario está haciendo ahora). Si no hay tareas
+  // activas para ese día de semana, cae al respaldo persistido en la
+  // tabla (último horario ingresado, vía last-wins).
+  Future<DaySchedule?> _prefillFor(DateTime date) async {
+    final repo = ref.read(dayScheduleRepositoryProvider);
+    final fromActive =
+        await repo.mostFrequentActiveScheduleForWeekday(date.weekday);
+    if (fromActive != null) return fromActive;
+    return repo.findByDayOfWeek(date.weekday);
   }
 
   String _scheduleQuestion(

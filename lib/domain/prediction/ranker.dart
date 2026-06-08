@@ -27,6 +27,7 @@ class TaskScore {
     required this.taskId,
     required this.score,
     required this.isForToday,
+    required this.isCritical,
     required this.daysAvailable,
     required this.breakdown,
   });
@@ -34,18 +35,23 @@ class TaskScore {
   final int taskId;
   final double score;
   final bool isForToday;
+  final bool isCritical;
   final int daysAvailable;
   final FactorBreakdown breakdown;
 }
 
 /// Calcula el orden sugerido de tareas a partir de los cinco factores.
 ///
-/// Reglas críticas:
-/// - Tareas con `dueDate == hoy` o con al menos un slot para hoy se
-///   ordenan SIEMPRE arriba del resto, sin importar el score.
-/// - Entre tareas "para hoy", se ordenan por score desc (y a igualdad,
-///   por `dueDate` asc, luego por id asc para que el orden sea estable).
-/// - El Ranker NO asigna bloques horarios — eso es trabajo del Scheduler.
+/// Reglas críticas (en orden de aplicación):
+/// 1. Tareas con `dueDate == hoy` o con al menos un slot futuro para hoy
+///    (`isForToday`) se ordenan SIEMPRE arriba del resto.
+/// 2. Tareas con `daysAvailable <= criticalDaysThreshold` (`isCritical`)
+///    se ordenan a continuación, antes del ranking por score. Garantiza
+///    que el caso "queda solo 1-2 días disponibles" no quede sepultado
+///    por una tarea con muchos días pero alta dificultad/duración.
+/// 3. Dentro de cada tier, se ordena por score desc; a igualdad, por
+///    `dueDate` asc y luego por id asc para que el orden sea estable.
+/// 4. El Ranker NO asigna bloques horarios — eso es trabajo del Scheduler.
 class Ranker {
   const Ranker();
 
@@ -94,6 +100,9 @@ class Ranker {
       final isForToday = dueDate.isAtSameMomentAs(today) ||
           activeDays.any((d) => d.isAtSameMomentAs(today));
 
+      final isCritical =
+          daysAvailable <= PredictionWeights.criticalDaysThreshold;
+
       final avgDaily = activeDays.isEmpty
           ? 0
           : (futureMinutes / activeDays.length).round();
@@ -119,6 +128,7 @@ class Ranker {
           taskId: task.id,
           score: score,
           isForToday: isForToday,
+          isCritical: isCritical,
           daysAvailable: daysAvailable,
           breakdown: breakdown,
         ),
@@ -130,6 +140,9 @@ class Ranker {
     scored.sort((a, b) {
       if (a.isForToday != b.isForToday) {
         return a.isForToday ? -1 : 1;
+      }
+      if (a.isCritical != b.isCritical) {
+        return a.isCritical ? -1 : 1;
       }
       final byScore = b.score.compareTo(a.score);
       if (byScore != 0) return byScore;

@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="org_app_pau"
+        android:label="AsisTask"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

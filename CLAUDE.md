@@ -61,10 +61,10 @@ La disponibilidad es por tarea. No hay base semanal global — la memoria se acu
 - Editar parámetros recomputa el orden en tiempo real (Riverpod reactiva el `Provider` que recalcula el ranking)
 
 ### 3. Calendario visual
-- Días con tarea programada → **azul**
-- Días de entrega → **rojo**
-- Un día puede tener ambos colores
-- Tap en día con varios eventos → lista de tareas del día
+- Días con tarea programada → **azul** (`AppColors.calendarScheduled = tab3Accent`)
+- Días de entrega → **fucsia** (`AppColors.calendarDeadline`)
+- Un día puede tener ambos marcadores (dos dots)
+- Tap en día → lista de eventos del día (bloques de trabajo + entregas)
 
 ---
 
@@ -158,7 +158,7 @@ flutter run                              # Build + deploy al dispositivo conecta
 
 ---
 
-## Estado actual del proyecto (2026-05-26)
+## Estado actual del proyecto (2026-06-07)
 
 ### Implementado y verificado en dispositivo físico ✅
 - **Sistema de diseño completo** (`lib/app/theme/`): paleta, tipografía Manrope, ThemeData Material 3. `AppColors.subjects` tiene 12 colores pastel sin duplicados.
@@ -170,7 +170,7 @@ flutter run                              # Build + deploy al dispositivo conecta
   - 7 preguntas secuenciales (nombre, materia, deadline, dificultad, duración, días a descartar, horario por día)
   - Dificultad: círculos con número (1–5) visible dentro; seleccionado = blanco sobre color, sin seleccionar = número en graphiteSoft
   - Hora de fin del selector: libre (sin redondeo a 30 min); hora de inicio sigue redondeándose
-  - Memoria de disponibilidad horaria por dayOfWeek (pre-relleno automático, first-time-wins)
+  - Memoria de disponibilidad horaria por dayOfWeek: prefill dinámico desde la **moda de tareas activas** (no completadas, no vencidas); si no hay, cae al respaldo en tabla `day_schedules` (política last-wins)
   - Si el día a configurar es hoy: inicio mínimo = hora actual redondeada al siguiente bloque de 30 min; si quedan < 30 min el día se descarta automáticamente con aviso del pug
   - Pug PNG (`pug_idle.png`, `pug_happy.png`, `pug_celebrate.png`) con fondo transparente; fondo PNG (`background.png`) con `BoxFit.cover`
   - Distribución visual: pug fijo en tercio inferior (altura dinámica `screenHeight / 3`), mensajes scrollean en los dos tercios superiores
@@ -182,7 +182,7 @@ flutter run                              # Build + deploy al dispositivo conecta
   - **Algoritmo de predicción** en `lib/domain/prediction/`:
     - `prediction_weights.dart`: pesos configurables (urgencia 35%, dificultad 25%, tiempo 20%, disponibilidad 10%, gusto 10%) + anclas de normalización
     - 5 factores normalizados 0–1 en `factors/` (urgency, difficulty, duration, availability, liking)
-    - `Ranker`: ordena por isForToday → score desc → dueDate asc → id asc; cuenta solo días presentes/futuros
+    - `Ranker`: ordena por **isForToday → isCritical (≤2 días disponibles) → score desc → dueDate asc → id asc**; cuenta solo días presentes/futuros. `criticalDaysThreshold = 2` en `prediction_weights.dart`
     - `Scheduler`: asignación global con pool compartido (`reservations = Map<DateTime, List<_Interval>>`); procesa tareas en orden del Ranker; sin solapamientos entre tareas; recorta día actual a hora presente; respeta `workedMinutes` (planifica solo el restante); respeta `maxTasksByDay` (tope por fecha)
     - `TaskSchedule.isComplete=false` → chip ámbar "No alcanza el tiempo" en tarjeta colapsada
   - Tareas activas: tarjetas expandibles con badge de rango, color de materia, chip de próximo bloque y chip de entrega; detalle expandido con dificultad (dots con número), duración, días disponibles, lista de bloques, botones Editar / Eliminar / Realizada
@@ -196,15 +196,23 @@ flutter run                              # Build + deploy al dispositivo conecta
 - **Tope de tareas por día** (`features/day_limits/`, ruta `/day-limits`, menú ⋮ "Tope por día"):
   - Lista de topes por fecha, agregar/editar (stepper 1–10, default 2), eliminar
   - ⚠️ Implementado y compilado — pendiente validación visual en dispositivo físico
-- **Shell**: PageView + `_KeepAlive` (AutomaticKeepAliveClientMixin) + swipe horizontal entre pestañas sincronizado con BottomNavigationBar; menú ⋮ overlay (gestionar materias, tope por día). Pestaña 3 es stub.
+- **Pestaña 3 — Calendario** (`features/calendar/screens/calendar_screen.dart`): completa ✅
+  - `TableCalendar` mensual, locale `es`, semana inicia lunes
+  - Markers: dot azul (`calendarScheduled`) = bloques de trabajo; dot fucsia (`calendarDeadline`) = fecha de entrega; coexisten si aplica
+  - Día seleccionado (default: hoy) → lista de eventos debajo con `AnimatedSwitcher` (fade + slide 220 ms)
+  - Tarjetas de evento: strip lateral de color del tipo, dot de materia, badge "Trabajo"/"Entrega", rango horario si es bloque
+  - Datos de `rankedTasksProvider` (sin provider nuevo); tareas completadas y vencidas no aparecen
+- **Shell**: PageView + `_KeepAlive` (AutomaticKeepAliveClientMixin) + swipe horizontal entre pestañas sincronizado con BottomNavigationBar; menú ⋮ overlay (gestionar materias, tope por día)
 - **Localización ES** inicializada en main.dart
 - **Tests**: `test/domain/prediction/` con 16 tests en verde (Scheduler: 13, Ranker: 3)
+- **Ícono y nombre de app**: `assets/images/app_icon.png` generado con `flutter_launcher_icons` (fondo adaptativo rosa `#F7C6D4`, `remove_alpha_ios: true`); nombre **AsisTask** en Android y iOS
+- **Repositorio GitHub**: público en `https://github.com/Desiler1fro/OrgApp_Asistask`
 - **Build Android exitoso**: `flutter analyze` sin issues, probado en dispositivo físico
 
-### Pendientes — en este orden de implementación
+### Pendientes
 
-1. **Validación visual de `/day-limits`** — correr en dispositivo físico y verificar flujo de agregar/editar/eliminar tope.
-2. **Pestaña 3 — Calendario** — usar `table_calendar`; días programados en azul (`AppColors.calendarScheduled = tab3Accent`), días de entrega en fucsia (`AppColors.calendarDeadline`); un día puede tener ambos colores; tap en día con varios eventos muestra lista de tareas del día.
+1. **Validar `/day-limits` en dispositivo físico** — flujo completo: agregar, editar, eliminar tope.
+2. **Ajustes de uso real** — posibles correcciones visuales o de lógica que surjan de la experiencia en dispositivo.
 
 ---
 

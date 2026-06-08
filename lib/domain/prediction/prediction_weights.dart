@@ -38,4 +38,11 @@ class PredictionWeights {
   /// granularidad del onboarding). Define el piso de la normalización
   /// de duration.
   static const int minDurationMinutes = 30;
+
+  /// Días disponibles a partir de los cuales una tarea se considera
+  /// "crítica" y se ancla al tope del listado (por encima del ranking
+  /// por score), justo después de las tareas para hoy. Garantiza que las
+  /// tareas con muy poco margen siempre suban, sin importar que otros
+  /// factores las desplacen.
+  static const int criticalDaysThreshold = 2;
 }
