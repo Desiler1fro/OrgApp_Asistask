@@ -1,0 +1,42 @@
+# Dart / Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+.packages
+.pub-cache/
+.pub/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Claude Code (configuración local)
+.claude/
+
+# Generated files
+*.g.dart
+*.freezed.dart
+*.gr.dart
+
+# Platform-specific (se generan con `flutter create`)
+# android/
+# ios/
+# macos/
+# linux/
+# windows/
+# web/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Coverage
+coverage/

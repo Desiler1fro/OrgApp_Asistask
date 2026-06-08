@@ -1,0 +1,62 @@
+name: org_app_pau
+description: "Organizador de tareas escolares con predicción inteligente del orden de ejecución."
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+  flutter: ">=3.24.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # ── Estado: Riverpod (estado derivado del algoritmo encaja perfecto) ──
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+
+  # ── Routing oficial con deep-linking ──
+  go_router: ^14.2.0
+
+  # ── Modelos inmutables + copyWith + ==/hashCode autogenerados ──
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+
+  # ── Persistencia local relacional (SQLite con type-safety) ──
+  drift: ^2.18.0
+  sqlite3_flutter_libs: ^0.5.24
+  path_provider: ^2.1.4
+  path: ^1.9.0
+
+  # ── UI / fechas / animaciones ──
+  intl: ^0.20.0
+  table_calendar: ^3.1.2
+  flutter_animate: ^4.5.0
+  google_fonts: ^6.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+  # ── Code generation ──
+  build_runner: ^2.4.12
+  drift_dev: ^2.18.0
+  freezed: ^2.5.7
+  json_serializable: ^6.8.0
+
+  # riverpod_generator + custom_lint + riverpod_lint quedaron fuera por
+  # un choque transitivo: riverpod_analyzer_utils → custom_lint_core →
+  # analyzer_plugin 0.12 no compila con analyzer 7 (Element vs Element2),
+  # y las versiones que sí (0.13.8+) requieren analyzer 8+ que rompe
+  # freezed 2.x. Mientras tanto los providers son manuales. Reactivar
+  # cuando la matriz custom_lint / freezed / analyzer vuelva a alinear.
+
+flutter:
+  uses-material-design: true
+  generate: true
+  assets:
+    - assets/icons/
+    - assets/images/
