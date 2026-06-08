@@ -23,6 +23,22 @@ build/
 *.freezed.dart
 *.gr.dart
 
+# Android — archivos locales y caché de Gradle
+android/local.properties
+android/.gradle/
+android/captures/
+android/app/debug/
+android/app/release/
+
+# iOS — artefactos de build fuera de build/
+ios/Flutter/ephemeral/
+ios/.symlinks/
+
+# Artefactos de distribución (ya cubiertos por build/, pero explícito)
+*.apk
+*.aab
+*.ipa
+
 # Platform-specific (se generan con `flutter create`)
 # android/
 # ios/

@@ -36,6 +36,13 @@ dependencies:
   flutter_animate: ^4.5.0
   google_fonts: ^6.2.1
 
+  # ── Notificaciones locales + preferencias ──
+  flutter_local_notifications: ^17.2.3
+  timezone: ^0.9.4
+  flutter_timezone: ^3.0.1
+  shared_preferences: ^2.3.2
+  permission_handler: ^11.3.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

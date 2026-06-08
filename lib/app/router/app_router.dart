@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../data/repositories/subject_repository_provider.dart';
 import '../../features/day_limits/screens/day_limits_screen.dart';
 import '../../features/manage_subjects/screens/manage_subjects_screen.dart';
+import '../../features/notifications/screens/notifications_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 import '../../features/shell/main_shell.dart';
 
@@ -44,6 +45,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: 'day-limits',
             builder: (context, state) => const DayLimitsScreen(),
+          ),
+          GoRoute(
+            path: 'notifications',
+            builder: (context, state) => const NotificationsScreen(),
           ),
         ],
       ),

@@ -110,7 +110,9 @@ orgApp_Pau/
 │   │   ├── add_task/                # Pestaña 1
 │   │   ├── manage_subjects/         # Gestión de materias (ruta /manage-subjects)
 │   │   ├── task_list/               # Pestaña 2
-│   │   └── calendar/                # Pestaña 3
+│   │   ├── calendar/                # Pestaña 3
+│   │   ├── day_limits/              # Tope por día (ruta /day-limits)
+│   │   └── notifications/           # Config. notificaciones (ruta /notifications)
 │   └── l10n/                        # i18n (español)
 ├── test/
 │   ├── domain/prediction/           # Tests del algoritmo (críticos)
@@ -158,7 +160,7 @@ flutter run                              # Build + deploy al dispositivo conecta
 
 ---
 
-## Estado actual del proyecto (2026-06-07)
+## Estado actual del proyecto (2026-06-07) — v1 completa
 
 ### Implementado y verificado en dispositivo físico ✅
 - **Sistema de diseño completo** (`lib/app/theme/`): paleta, tipografía Manrope, ThemeData Material 3. `AppColors.subjects` tiene 12 colores pastel sin duplicados.
@@ -202,12 +204,21 @@ flutter run                              # Build + deploy al dispositivo conecta
   - Día seleccionado (default: hoy) → lista de eventos debajo con `AnimatedSwitcher` (fade + slide 220 ms)
   - Tarjetas de evento: strip lateral de color del tipo, dot de materia, badge "Trabajo"/"Entrega", rango horario si es bloque
   - Datos de `rankedTasksProvider` (sin provider nuevo); tareas completadas y vencidas no aparecen
-- **Shell**: PageView + `_KeepAlive` (AutomaticKeepAliveClientMixin) + swipe horizontal entre pestañas sincronizado con BottomNavigationBar; menú ⋮ overlay (gestionar materias, tope por día)
+- **Shell**: PageView + `_KeepAlive` (AutomaticKeepAliveClientMixin) + swipe horizontal entre pestañas sincronizado con BottomNavigationBar; menú ⋮ overlay (gestionar materias, tope por día, notificaciones)
+- **Sistema de notificaciones locales** (`flutter_local_notifications ^17.2.3`): completo ✅
+  - Tres tipos independientes: **deadline** (09:00 del día anterior), **bloque de trabajo** (15 min antes del inicio), **urgencia crítica** (próximas 09:00 mientras `isCritical`)
+  - `domain/notifications/notification_planner.dart`: lógica pura, sin Flutter ni Drift
+  - `data/services/notification_service.dart`: init + tz + permisos + schedule/cancel por tipo (IDs particionados por rangos de 100M)
+  - `features/notifications/screens/notifications_screen.dart`: 3 toggles independientes + banner si el permiso del sistema está denegado
+  - `NotificationController`: widget invisible en `MaterialApp.builder` que reprograma en cada cambio de tareas o preferencias
+  - Preferencias persistidas en `shared_preferences`; permiso pedido una sola vez al primer launch
+  - Android: `POST_NOTIFICATIONS`, `SCHEDULE_EXACT_ALARM`, `USE_EXACT_ALARM`, receivers para reboot; `isCoreLibraryDesugaringEnabled = true` + `desugar_jdk_libs:2.1.4`
+- **README.md**: reescrito en español con descripción completa de la app, pestañas, algoritmo, stack y estructura
 - **Localización ES** inicializada en main.dart
 - **Tests**: `test/domain/prediction/` con 16 tests en verde (Scheduler: 13, Ranker: 3)
 - **Ícono y nombre de app**: `assets/images/app_icon.png` generado con `flutter_launcher_icons` (fondo adaptativo rosa `#F7C6D4`, `remove_alpha_ios: true`); nombre **AsisTask** en Android y iOS
 - **Repositorio GitHub**: público en `https://github.com/Desiler1fro/OrgApp_Asistask`
-- **Build Android exitoso**: `flutter analyze` sin issues, probado en dispositivo físico
+- **Build release Android**: `app-arm64-v8a-release.apk` (~24 MB); `flutter analyze` sin issues
 
 ### Pendientes
 
@@ -218,7 +229,6 @@ flutter run                              # Build + deploy al dispositivo conecta
 
 ## Decisiones pendientes
 
-- [ ] **Estrategia de notificaciones/recordatorios**
 - [ ] **Manejo de tareas recurrentes** (si aplica)
 - [ ] **Sync multi-dispositivo** — postergada; si se requiere, sumar Supabase sobre la base local sin reescribir el modelo
 
@@ -235,3 +245,4 @@ flutter run                              # Build + deploy al dispositivo conecta
 - ✅ Algoritmo de predicción: 5 factores con orden de prioridad definido (urgencia > dificultad > tiempo estimado > disponibilidad > gusto). Fórmula exacta la define Claude al implementar; pesos como constantes configurables.
 - ✅ Descarte de días: el usuario puede descartar días al crear una tarea; los descartados no participan en la planificación.
 - ✅ Memoria de disponibilidad horaria: el sistema pre-rellena horarios ya conocidos por día; se construye progresivamente, no en onboarding.
+- ✅ Notificaciones locales: 3 tipos (deadline 24 h antes, bloque de trabajo 15 min antes, urgencia crítica), toggles independientes por tipo, persistidos en shared_preferences.

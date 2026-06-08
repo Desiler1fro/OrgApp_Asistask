@@ -6,7 +6,7 @@ import '../add_task/screens/add_task_screen.dart';
 import '../calendar/screens/calendar_screen.dart';
 import '../task_list/screens/task_list_screen.dart';
 
-enum _ShellMenuAction { manageSubjects, dayLimits }
+enum _ShellMenuAction { manageSubjects, dayLimits, notifications }
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -50,6 +50,8 @@ class _MainShellState extends State<MainShell> {
         context.go('/manage-subjects');
       case _ShellMenuAction.dayLimits:
         context.go('/day-limits');
+      case _ShellMenuAction.notifications:
+        context.go('/notifications');
     }
   }
 
@@ -165,6 +167,16 @@ class _ShellMenuButton extends StatelessWidget {
                 Icon(Icons.event_available_outlined, size: 20),
                 SizedBox(width: 12),
                 Text('Tope por día'),
+              ],
+            ),
+          ),
+          PopupMenuItem(
+            value: _ShellMenuAction.notifications,
+            child: Row(
+              children: [
+                Icon(Icons.notifications_none_rounded, size: 20),
+                SizedBox(width: 12),
+                Text('Notificaciones'),
               ],
             ),
           ),
