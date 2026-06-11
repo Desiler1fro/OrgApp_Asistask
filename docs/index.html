@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AsisTask — Organizador inteligente de tareas escolares</title>
+
+  <!-- Google Analytics 4 — reemplaza G-XXXXXXXXXX con tu Measurement ID -->
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script> -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:        #FAF6EE;
+      --beige:        #F1E7D3;
+      --border:       #DDD4C5;
+      --text:         #3A3530;
+      --text-soft:    #6E6862;
+
+      --rose:         #F7C6D4;
+      --rose-accent:  #E89BAE;
+      --sage:         #A8B89E;
+      --sage-accent:  #7C8B6E;
+      --sage-tint:    #ECEFE3;
+      --sky:          #B5D2E5;
+      --sky-accent:   #7BAACB;
+      --fucsia:       #D77AA1;
+
+      --radius-card:  18px;
+      --radius-pill:  100px;
+      --shadow:       0 2px 16px rgba(58,53,48,.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Manrope', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(250,246,238,.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 clamp(1.5rem, 5vw, 4rem);
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .nav-brand img {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: .9rem;
+      font-weight: 500;
+      color: var(--text-soft);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--rose-accent); }
+
+    /* ── HERO ── */
+    .hero {
+      padding: clamp(4rem, 10vw, 8rem) clamp(1.5rem, 5vw, 4rem);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .hero-tag {
+      display: inline-block;
+      background: var(--rose);
+      color: var(--rose-accent);
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: .3rem .9rem;
+      border-radius: var(--radius-pill);
+      margin-bottom: 1.2rem;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 1.2rem;
+    }
+    .hero h1 span { color: var(--rose-accent); }
+    .hero-desc {
+      font-size: 1.05rem;
+      color: var(--text-soft);
+      margin-bottom: 2rem;
+      max-width: 460px;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      background: var(--rose-accent);
+      color: #fff;
+      padding: .75rem 1.6rem;
+      border-radius: var(--radius-pill);
+      font-weight: 700;
+      font-size: .95rem;
+      text-decoration: none;
+      transition: opacity .2s, transform .15s;
+    }
+    .btn-primary:hover { opacity: .88; transform: translateY(-1px); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+      padding: .75rem 1.6rem;
+      border-radius: var(--radius-pill);
+      font-weight: 600;
+      font-size: .95rem;
+      text-decoration: none;
+      transition: border-color .2s, color .2s;
+    }
+    .btn-secondary:hover { border-color: var(--sage-accent); color: var(--sage-accent); }
+
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+    }
+    .phone-mockup {
+      width: 220px;
+      background: var(--beige);
+      border-radius: 36px;
+      border: 6px solid var(--border);
+      overflow: hidden;
+      box-shadow: var(--shadow), 0 12px 40px rgba(58,53,48,.12);
+    }
+    .phone-mockup img {
+      width: 100%;
+      display: block;
+    }
+    .phone-placeholder {
+      width: 100%;
+      aspect-ratio: 9/19;
+      background: linear-gradient(160deg, var(--rose) 0%, var(--sky) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      color: #fff;
+      font-weight: 600;
+      font-size: .85rem;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    /* ── SECTION BASE ── */
+    section {
+      padding: clamp(3rem, 7vw, 6rem) clamp(1.5rem, 5vw, 4rem);
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .section-label {
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: .6rem;
+    }
+    .section-title {
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      font-weight: 800;
+      margin-bottom: .8rem;
+    }
+    .section-desc {
+      color: var(--text-soft);
+      max-width: 560px;
+      margin-bottom: 3rem;
+    }
+
+    /* ── FEATURES (PESTAÑAS) ── */
+    #funcionalidades { background: none; }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .feature-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      transition: transform .2s;
+    }
+    .feature-card:hover { transform: translateY(-3px); }
+    .feature-card:nth-child(1) { border-top: 3px solid var(--rose-accent); }
+    .feature-card:nth-child(2) { border-top: 3px solid var(--sage-accent); }
+    .feature-card:nth-child(3) { border-top: 3px solid var(--sky-accent); }
+    .feature-tab {
+      display: inline-block;
+      font-size: .75rem;
+      font-weight: 700;
+      padding: .25rem .75rem;
+      border-radius: var(--radius-pill);
+      margin-bottom: 1rem;
+    }
+    .tab-1 { background: var(--rose); color: var(--rose-accent); }
+    .tab-2 { background: var(--sage-tint); color: var(--sage-accent); }
+    .tab-3 { background: var(--sky); color: var(--sky-accent); }
+    .feature-card h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: .6rem;
+    }
+    .feature-card p {
+      font-size: .92rem;
+      color: var(--text-soft);
+      line-height: 1.65;
+    }
+    .feature-screenshot {
+      margin-top: 1.5rem;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .feature-screenshot img {
+      width: 100%;
+      display: block;
+    }
+    .screenshot-placeholder {
+      width: 100%;
+      aspect-ratio: 9/16;
+      background: var(--beige);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .8rem;
+      color: var(--text-soft);
+      font-weight: 500;
+    }
+
+    /* ── ALGORITHM ── */
+    #algoritmo {
+      background: var(--sage-tint);
+      border-radius: var(--radius-card);
+      max-width: 100%;
+      padding: clamp(3rem, 7vw, 5rem) clamp(1.5rem, 5vw, 4rem);
+    }
+    #algoritmo .inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .factors-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .factor-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      border: 1px solid var(--border);
+    }
+    .factor-name {
+      font-weight: 700;
+      font-size: .95rem;
+      margin-bottom: .3rem;
+    }
+    .factor-desc {
+      font-size: .82rem;
+      color: var(--text-soft);
+      margin-bottom: .75rem;
+    }
+    .factor-bar {
+      height: 5px;
+      border-radius: 100px;
+      background: var(--border);
+      overflow: hidden;
+    }
+    .factor-fill {
+      height: 100%;
+      border-radius: 100px;
+      background: var(--sage-accent);
+    }
+    .factor-weight {
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--sage-accent);
+      margin-top: .4rem;
+    }
+
+    /* ── ABOUT ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+    .about-text h2 { margin-bottom: 1rem; }
+    .about-text p {
+      color: var(--text-soft);
+      margin-bottom: 1rem;
+      font-size: .97rem;
+    }
+    .stack-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin-top: 1.5rem;
+    }
+    .stack-chip {
+      background: var(--beige);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-pill);
+      padding: .3rem .9rem;
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--text-soft);
+    }
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .stat-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--rose-accent);
+      line-height: 1;
+      margin-bottom: .3rem;
+    }
+    .stat-label {
+      font-size: .82rem;
+      color: var(--text-soft);
+      font-weight: 500;
+    }
+
+    /* ── DOWNLOAD ── */
+    .download-section {
+      text-align: center;
+      background: linear-gradient(135deg, var(--rose) 0%, var(--sky) 100%);
+      border-radius: var(--radius-card);
+      padding: clamp(3rem, 7vw, 5rem) 2rem;
+      max-width: 100%;
+    }
+    .download-section .inner {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .download-section h2 {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 800;
+      margin-bottom: .8rem;
+      color: var(--text);
+    }
+    .download-section p {
+      color: var(--text-soft);
+      margin-bottom: 2rem;
+    }
+    .download-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem clamp(1.5rem, 5vw, 4rem);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      color: var(--text-soft);
+      font-size: .85rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      .hero-actions { justify-content: center; }
+      .hero-desc { margin: 0 auto 2rem; }
+      .hero-visual { order: -1; }
+      .phone-mockup { width: 160px; }
+      .about-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-brand" href="#">
+      <!-- Reemplaza con: <img src="assets/icon.png" alt="AsisTask" /> -->
+      AsisTask
+    </a>
+    <ul class="nav-links">
+      <li><a href="#funcionalidades">Funcionalidades</a></li>
+      <li><a href="#algoritmo">Cómo funciona</a></li>
+      <li><a href="#sobre">Sobre el proyecto</a></li>
+      <li><a href="#descarga">Descargar</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <div style="max-width:1100px;margin:0 auto;">
+    <div class="hero">
+      <div class="hero-content">
+        <span class="hero-tag">App móvil para estudiantes</span>
+        <h1>Organiza tus tareas.<br /><span>Sin adivinar por dónde empezar.</span></h1>
+        <p class="hero-desc">
+          AsisTask analiza tus tareas y decide el orden óptimo para hacerlas, tomando en cuenta fechas de entrega, dificultad, tiempo disponible y más.
+        </p>
+        <div class="hero-actions">
+          <a href="#descarga" class="btn-primary">Descargar APK</a>
+          <a href="https://github.com/Desiler1fro/OrgApp_Asistask" target="_blank" rel="noopener" class="btn-secondary">Ver en GitHub</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="phone-mockup">
+          <img src="assets/screenshot-hero.png" alt="AsisTask en acción" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section id="funcionalidades">
+    <span class="section-label" style="color:var(--rose-accent)">Tres pestañas, una sola app</span>
+    <h2 class="section-title">Todo lo que necesitas para organizarte</h2>
+    <p class="section-desc">Cada pestaña tiene un propósito claro: agregar, planificar y visualizar tus tareas escolares.</p>
+    <div class="features-grid">
+
+      <div class="feature-card">
+        <span class="feature-tab tab-1">Pestaña 1 — Agregar</span>
+        <h3>Un asistente que te pregunta todo</h3>
+        <p>Una mascota virtual (un pug en pixel art) te guía con preguntas conversacionales: nombre de la tarea, materia, fecha de entrega, dificultad, tiempo estimado y tu disponibilidad horaria por día.</p>
+        <div class="feature-screenshot">
+          <img src="assets/screenshot-tab1.png" alt="Pestaña Agregar tarea" />
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <span class="feature-tab tab-2">Pestaña 2 — Listado</span>
+        <h3>El orden que más te conviene</h3>
+        <p>Tus tareas aparecen ordenadas según el algoritmo de predicción. Puedes ver el bloque horario asignado a cada una, editar sus parámetros y el orden se recalcula en tiempo real. Las tareas completadas se archivan en el historial.</p>
+        <div class="feature-screenshot">
+          <img src="assets/screenshot-tab2.png" alt="Pestaña Listado ordenado" />
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <span class="feature-tab tab-3">Pestaña 3 — Calendario</span>
+        <h3>Una vista de todo tu mes</h3>
+        <p>Días con sesiones de trabajo marcados en azul, días de entrega en fucsia. Al tocar cualquier día con eventos se despliega la lista de tareas correspondientes con sus horarios asignados.</p>
+        <div class="feature-screenshot">
+          <img src="assets/screenshot-tab3.png" alt="Pestaña Calendario" />
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ALGORITHM -->
+  <div id="algoritmo" style="padding: clamp(3rem,7vw,5rem) clamp(1.5rem,5vw,4rem);">
+    <div class="inner">
+      <span class="section-label" style="color:var(--sage-accent)">El cerebro de la app</span>
+      <h2 class="section-title">Cómo decide AsisTask el orden de tus tareas</h2>
+      <p class="section-desc">El algoritmo de predicción evalúa cinco factores por cada tarea, los normaliza y los combina con pesos distintos para calcular un score de prioridad.</p>
+      <div class="factors-grid">
+        <div class="factor-card">
+          <div class="factor-name">Urgencia</div>
+          <div class="factor-desc">Días disponibles hasta la fecha de entrega. Menos días = mayor prioridad.</div>
+          <div class="factor-bar"><div class="factor-fill" style="width:35%"></div></div>
+          <div class="factor-weight">35% del score</div>
+        </div>
+        <div class="factor-card">
+          <div class="factor-name">Dificultad</div>
+          <div class="factor-desc">Escala 1–5. Las tareas más difíciles se atacan primero para no dejarlas al final.</div>
+          <div class="factor-bar"><div class="factor-fill" style="width:25%"></div></div>
+          <div class="factor-weight">25% del score</div>
+        </div>
+        <div class="factor-card">
+          <div class="factor-name">Tiempo estimado</div>
+          <div class="factor-desc">Las tareas largas suben en prioridad para garantizar que haya días suficientes.</div>
+          <div class="factor-bar"><div class="factor-fill" style="width:20%"></div></div>
+          <div class="factor-weight">20% del score</div>
+        </div>
+        <div class="factor-card">
+          <div class="factor-name">Disponibilidad</div>
+          <div class="factor-desc">Horas disponibles en los días asignados. Menos margen = mayor prioridad.</div>
+          <div class="factor-bar"><div class="factor-fill" style="width:10%"></div></div>
+          <div class="factor-weight">10% del score</div>
+        </div>
+        <div class="factor-card">
+          <div class="factor-name">Gusto por la materia</div>
+          <div class="factor-desc">Escala 1–5. Mayor gusto = mayor prioridad como incentivo positivo.</div>
+          <div class="factor-bar"><div class="factor-fill" style="width:10%"></div></div>
+          <div class="factor-weight">10% del score</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section id="sobre">
+    <div class="about-grid">
+      <div class="about-text">
+        <span class="section-label" style="color:var(--sky-accent)">Sobre el proyecto</span>
+        <h2 class="section-title">Un proyecto construido con intención</h2>
+        <p>AsisTask nació como un proyecto personal con un objetivo claro: que los estudiantes no tengan que planificar manualmente el orden en que hacen sus tareas. La app decide por ellos, de forma inteligente y adaptable.</p>
+        <p>Desarrollada en Flutter con una arquitectura feature-first y lógica de dominio pura, el algoritmo de predicción es completamente independiente de la interfaz y está cubierto por tests automatizados.</p>
+        <div class="stack-list">
+          <span class="stack-chip">Flutter</span>
+          <span class="stack-chip">Dart</span>
+          <span class="stack-chip">Riverpod</span>
+          <span class="stack-chip">Drift / SQLite</span>
+          <span class="stack-chip">Freezed</span>
+          <span class="stack-chip">go_router</span>
+          <span class="stack-chip">table_calendar</span>
+          <span class="stack-chip">flutter_animate</span>
+          <span class="stack-chip">flutter_local_notifications</span>
+        </div>
+      </div>
+      <div class="about-stats">
+        <div class="stat-card">
+          <div class="stat-number">5</div>
+          <div class="stat-label">Factores de predicción</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">3</div>
+          <div class="stat-label">Tipos de notificaciones</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">16</div>
+          <div class="stat-label">Tests automatizados</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">25 MB</div>
+          <div class="stat-label">Tamaño del APK release</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOWNLOAD -->
+  <div id="descarga" style="padding: 0 clamp(1.5rem,5vw,4rem) clamp(3rem,7vw,5rem); max-width:1100px; margin:0 auto;">
+    <div class="download-section">
+      <div class="inner">
+        <h2>Instala AsisTask en tu Android</h2>
+        <p>Descarga el APK directamente o revisa el código fuente en GitHub. Compatible con Android 5.0 o superior.</p>
+        <div class="download-actions">
+          <!-- Reemplaza href con el enlace real al APK cuando lo subas -->
+          <a href="#" class="btn-primary">Descargar APK</a>
+          <a href="https://github.com/Desiler1fro/OrgApp_Asistask" target="_blank" rel="noopener" class="btn-secondary">Ver código fuente</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>AsisTask — Proyecto personal de Deisler, estudiante de Datos e IA en UPY.</span>
+    <a href="https://github.com/Desiler1fro/OrgApp_Asistask" target="_blank" rel="noopener" style="color:var(--text-soft);text-decoration:none;font-weight:600;">GitHub</a>
+  </footer>
+
+</body>
+</html>
