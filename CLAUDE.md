@@ -160,7 +160,7 @@ flutter run                              # Build + deploy al dispositivo conecta
 
 ---
 
-## Estado actual del proyecto (2026-06-07) — v1 completa
+## Estado actual del proyecto (2026-06-11) — v1 completa + sitio web
 
 ### Implementado y verificado en dispositivo físico ✅
 - **Sistema de diseño completo** (`lib/app/theme/`): paleta, tipografía Manrope, ThemeData Material 3. `AppColors.subjects` tiene 12 colores pastel sin duplicados.
@@ -219,11 +219,13 @@ flutter run                              # Build + deploy al dispositivo conecta
 - **Ícono y nombre de app**: `assets/images/app_icon.png` generado con `flutter_launcher_icons` (fondo adaptativo rosa `#F7C6D4`, `remove_alpha_ios: true`); nombre **AsisTask** en Android y iOS
 - **Repositorio GitHub**: público en `https://github.com/Desiler1fro/OrgApp_Asistask`
 - **Build release Android**: `app-arm64-v8a-release.apk` (~24 MB); `flutter analyze` sin issues
+- **Sitio web GitHub Pages** ✅: `https://desiler1fro.github.io/OrgApp_Asistask/` — implementado en `docs/index.html` dentro del mismo repo; secciones: Hero (screenshot real), Funcionalidades (3 pestañas con screenshots reales), Algoritmo (5 factores con barras de peso), Sobre el proyecto (chips de stack + estadísticas), Descarga, Footer. Paleta y tipografía Manrope alineadas con la app. Google Analytics GA4 integrado en el `<head>`.
 
 ### Pendientes
 
 1. **Validar `/day-limits` en dispositivo físico** — flujo completo: agregar, editar, eliminar tope.
 2. **Ajustes de uso real** — posibles correcciones visuales o de lógica que surjan de la experiencia en dispositivo.
+3. **URL de descarga APK** — el botón "Descargar APK" en el sitio web apunta a `#`; pendiente enlazar al release de GitHub o a Drive cuando se suba el APK.
 
 ---
 
